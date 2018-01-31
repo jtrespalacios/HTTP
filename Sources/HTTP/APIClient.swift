@@ -41,13 +41,7 @@ open class APIClient: HTTPClientDelegate {
     }
 
     open func willSend(request: inout Requestable) throws {
-        // TODO: Tie into auth service to get headers
-        // Integration point for grindr API's and back off, each API Client can have a back off manager to mange its requests
-        /*
-         if request.identifier == "bad_request" {
-         throw BackoffError.coolIt("")
-         }
-         */
+        // Integration point for rejecting or altering requests when necessary
     }
 
     public func send<T: Decodable>(_ requestableRoute: RequestableRoute) throws -> Promise<T> {
