@@ -8,18 +8,26 @@ import PromiseKit
 
 // MARK: Requestable
 public protocol Requestable {
-  var request: URLRequest { get }
+  var request: URLRequest { get set }
   var identifier: String { get }
 }
 
 // MARK: URLRequest - Requestable
 extension URLRequest: Requestable {
-  public var request: URLRequest { return self }
+  public var request: URLRequest {
+    get {
+      return self
+    }
+    set {
+      self = newValue
+    }
+  }
+
   public var identifier: String { return request.url!.absoluteString }
 }
 
 public class IdentifiedURLRequest: Requestable {
-  public let request: URLRequest
+  public var request: URLRequest
   public let identifier: String
 
   init(request: URLRequest, identifier: String) {
@@ -83,13 +91,25 @@ public class HTTPRequest {
     return resolveRequestable(request, identifier: identifier)
   }
 
+  public static func generateRequest(_ urlString: String,
+                                     params: [(String, String?)]? = nil,
+                                     method: Method = .get,
+                                     identifier: String? = nil) throws -> Requestable {
+    guard var urlComponents = URLComponents(string: urlString) else { throw HTTPRequestError.failedToCreateURL(urlString) }
+    urlComponents.queryItems = convert(params: params)
+    guard let url = urlComponents.url else { throw HTTPRequestError.failedToCreateURL("\(urlComponents)") }
+    var request = URLRequest(url: url)
+    request.httpMethod = method.rawValue
+    return resolveRequestable(request, identifier: identifier)
+  }
+
   public static
     func generateRequest<T: Encodable>(_ urlString: String,
                                        params: [(String, String?)]?,
-                                       method: Method = .get,
-                                       payload: T? = nil,
+                                       method: Method = .post,
+                                       payload: T,
                                        identifier: String? = nil) throws -> Requestable {
-    guard method == .get && payload != nil else {
+    guard method == .get else {
       throw HTTPRequestError.getRequestCannotHaveBody
     }
 
