@@ -14,7 +14,7 @@ class APIClientTests: HTTPClientTestCase {
         let e = expectation(description: "Should resolve with a test codable")
         try! client.put(Constants.path, payload: TestCodable.testSubject(), queryItems: Constants.queryItems).then { (result: TestCodable) in
             self.validateResult(result, e: e)
-        }.catch { error in
+        }.catch { _ in
                 XCTFail("This should not fail")
         }
         resolveRun(data: TestCodable.testData())
@@ -25,7 +25,7 @@ class APIClientTests: HTTPClientTestCase {
         let e = expectation(description: "Should resolve with a test codable")
         try! client.post(Constants.path, payload: TestCodable.testSubject(), queryItems: Constants.queryItems).then { (result: TestCodable) in
             self.validateResult(result, e: e)
-            }.catch { error in
+            }.catch { _ in
                 XCTFail("This should not fail")
         }
         resolveRun(data: TestCodable.testData())
@@ -34,9 +34,9 @@ class APIClientTests: HTTPClientTestCase {
 
     func testDelete() {
         let e = expectation(description: "Should resolve with a test codable")
-        try! client.delete(Constants.path, queryItems: Constants.queryItems).then { (response: HTTPURLResponse, data: Data?) in
+        try! client.delete(Constants.path, queryItems: Constants.queryItems).then { (response: HTTPURLResponse, _: Data?) in
             self.validateResult(response, statusCode: 200, e: e)
-        }.catch { error in
+        }.catch { _ in
                 XCTFail("This should not fail")
         }
         resolveRun(data: TestCodable.testData())
@@ -47,7 +47,7 @@ class APIClientTests: HTTPClientTestCase {
         let e = expectation(description: "Should resolve with a test codable")
         try! client.send(TestSimpleRoute()).then { (result: TestCodable) in
             self.validateResult(result, e: e)
-        }.catch { error in
+        }.catch { _ in
                 XCTFail("This should not fail")
         }
         resolveRun(data: TestCodable.testData())
@@ -58,7 +58,7 @@ class APIClientTests: HTTPClientTestCase {
         let e = expectation(description: "Should resolve with a test codable")
         try! client.send(TestUploadRoute()).then { (result: TestCodable) in
             self.validateResult(result, e: e)
-            }.catch { error in
+            }.catch { _ in
                 XCTFail("This should not fail")
         }
         resolveRun(data: TestCodable.testData())

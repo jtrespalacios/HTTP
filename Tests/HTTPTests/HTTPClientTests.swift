@@ -18,7 +18,7 @@ class HTTPClientTests: HTTPClientTestCase {
     func testSessionConfigInitFail() {
         XCTAssertThrowsError(try APIClient(host: Constants.badHost, sessionConfig: .default))
     }
-    
+
     func testBadAPIClientHost() {
         XCTAssertThrowsError(try APIClient(host: Constants.badHost, session: sessionMock))
     }
@@ -118,7 +118,7 @@ class HTTPClientTests: HTTPClientTestCase {
 
     func testGet() {
         let e = expectation(description: "Should resolve with a http response")
-        _ = httpClient.get(url: testURL).then { (httpResponse: HTTPURLResponse, data: Data?) in
+        _ = httpClient.get(url: testURL).then { (httpResponse: HTTPURLResponse, _: Data?) in
             self.validateResult(httpResponse, statusCode: 200, e: e)
         }
         resolveRun()
@@ -127,7 +127,7 @@ class HTTPClientTests: HTTPClientTestCase {
 
     func testPut() {
         let e = expectation(description: "Should resolve with a http response")
-        _ = httpClient.put(testURL, payload: TestCodable.testSubject()).then { (httpResponse: HTTPURLResponse, data: Data?) in
+        _ = httpClient.put(testURL, payload: TestCodable.testSubject()).then { (httpResponse: HTTPURLResponse, _: Data?) in
             self.validateResult(httpResponse, statusCode: 200, e: e)
         }
         resolveRun()
@@ -136,7 +136,7 @@ class HTTPClientTests: HTTPClientTestCase {
 
     func testPost() {
         let e = expectation(description: "Should resolve with a http response")
-        _ = httpClient.post(testURL, payload: TestCodable.testSubject()).then{ (httpResponse: HTTPURLResponse, data: Data?) in
+        _ = httpClient.post(testURL, payload: TestCodable.testSubject()).then { (httpResponse: HTTPURLResponse, _: Data?) in
             self.validateResult(httpResponse, statusCode: 200, e: e)
         }
         resolveRun()
@@ -145,7 +145,7 @@ class HTTPClientTests: HTTPClientTestCase {
 
     func testDelete() {
         let e = expectation(description: "Should resolve with a http response")
-        _ = httpClient.delete(testURL).then{ (httpResponse: HTTPURLResponse, data: Data?) in
+        _ = httpClient.delete(testURL).then { (httpResponse: HTTPURLResponse, _: Data?) in
             self.validateResult(httpResponse, statusCode: 200, e: e)
         }
         resolveRun()
@@ -156,7 +156,7 @@ class HTTPClientTests: HTTPClientTestCase {
         let e = expectation(description: "Should resolve with a http response")
         _ = httpClient.get(testURL).then { (result: TestCodable) in
             self.validateResult(result, e: e)
-            }.catch { error in
+            }.catch { _ in
                 fatalError("This should not fail")
         }
         resolveRun(data: TestCodable.testData())
@@ -165,7 +165,7 @@ class HTTPClientTests: HTTPClientTestCase {
 
     func testGetDecodableFail() {
         let e = expectation(description: "Should resolve with a http response")
-        _ = httpClient.sendDecodableRequest(URLRequest(url: testURL)).then { (result: FailingEncoding) in
+        _ = httpClient.sendDecodableRequest(URLRequest(url: testURL)).then { (_: FailingEncoding) in
             XCTFail("This should not succeed")
             }.catch { error in
                 XCTAssertTrue(error is HTTPClient.HTTPClientError)
@@ -177,7 +177,7 @@ class HTTPClientTests: HTTPClientTestCase {
 
     func testGetDecodableFailNoData() {
         let e = expectation(description: "Should resolve with a http response")
-        _ = httpClient.sendDecodableRequest(URLRequest(url: testURL)).then { (result: FailingEncoding) in
+        _ = httpClient.sendDecodableRequest(URLRequest(url: testURL)).then { (_: FailingEncoding) in
             XCTFail("This should not succeed")
             }.catch { error in
                 XCTAssertTrue(error is HTTPClient.HTTPClientError)
@@ -204,7 +204,7 @@ class HTTPClientTests: HTTPClientTestCase {
         let e = expectation(description: "Should resolve with a http response")
         try! httpClient.put(testURL, payload: TestCodable.testSubject()).then { (result: TestCodable) in
             self.validateResult(result, e: e)
-            }.catch { error in
+            }.catch { _ in
                 fatalError("This should not fail")
         }
         resolveRun(data: TestCodable.testData())
@@ -213,9 +213,9 @@ class HTTPClientTests: HTTPClientTestCase {
 
     func testPostDecodable() {
         let e = expectation(description: "Should resolve with a http response")
-        try! httpClient.post(testURL, payload: TestCodable.testSubject()).then{ (result: TestCodable) in
+        try! httpClient.post(testURL, payload: TestCodable.testSubject()).then { (result: TestCodable) in
             self.validateResult(result, e: e)
-            }.catch { error in
+            }.catch { _ in
                 fatalError("This should not fail")
         }
         resolveRun(data: TestCodable.testData())
@@ -224,7 +224,7 @@ class HTTPClientTests: HTTPClientTestCase {
 
     func testPutFailure() {
         let e = expectation(description: "Should resolve with a http response")
-        httpClient.put(testURL, payload: TestCodable.testSubject()).then { (httpResponse: HTTPURLResponse, data: Data?) in
+        httpClient.put(testURL, payload: TestCodable.testSubject()).then { (_: HTTPURLResponse, _: Data?) in
             XCTFail("This should not resolve")
             }.catch { error in
                 XCTAssertTrue(error is HTTPClient.HTTPClientError)
@@ -236,7 +236,7 @@ class HTTPClientTests: HTTPClientTestCase {
 
     func testPostFailure() {
         let e = expectation(description: "Should resolve with a http response")
-        httpClient.post(testURL, payload: TestCodable.testSubject()).then{ (httpResponse: HTTPURLResponse, data: Data?) in
+        httpClient.post(testURL, payload: TestCodable.testSubject()).then { (_: HTTPURLResponse, _: Data?) in
             XCTFail("This should not resolve")
             }.catch { error in
                 XCTAssertTrue(error is HTTPClient.HTTPClientError)
@@ -248,7 +248,7 @@ class HTTPClientTests: HTTPClientTestCase {
 
     func testDeleteFailure() {
         let e = expectation(description: "Should resolve with a http response")
-        httpClient.delete(testURL).then{ (httpResponse: HTTPURLResponse, data: Data?) in
+        httpClient.delete(testURL).then { (_: HTTPURLResponse, _: Data?) in
             XCTFail("This should not resolve")
             }.catch { error in
                 XCTAssertTrue(error is HTTPClient.HTTPClientError)
@@ -295,13 +295,12 @@ class HTTPClientTests: HTTPClientTestCase {
 //        wait(for: [e], timeout: 0.1)
 //    }
 
-
     func testRequestFailsWithError() {
         enum FakeError: Error {
             case knownError
         }
         let e = expectation(description: "Should resolve with a http response")
-        httpClient.send(URLRequest(url: testURL)).then { (response: HTTPURLResponse, data: Data?) in
+        httpClient.send(URLRequest(url: testURL)).then { (_: HTTPURLResponse, _: Data?) in
             XCTFail("This should not resolve")
             }.catch { error in
                 XCTAssertTrue(error is FakeError)

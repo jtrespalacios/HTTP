@@ -17,7 +17,7 @@ class URLSessionTasklMock: URLSessionDownloadTaskProtocol, URLSessionDataTaskPro
 }
 
 class URLSessionProtocolMock: URLSessionProtocol {
-    //MARK: - downloadTask
+    // MARK: - downloadTask
     var downloadTaskCalled = false
     var downloadTaskReceivedArguments: (url: URL, completionHandler: (URL?, URLResponse?, Error?) -> Void)?
     var downloadTaskReturnValue: URLSessionDownloadTaskProtocol = URLSessionTasklMock()
@@ -28,7 +28,7 @@ class URLSessionProtocolMock: URLSessionProtocol {
         return downloadTaskReturnValue
     }
 
-    //MARK: - dataTask
+    // MARK: - dataTask
     var dataTaskCalled = false
     var dataTaskReceivedArguments: (request: URLRequest, completionHandler: (Data?, URLResponse?, Error?) -> Swift.Void)?
     var dataTaskReturnValue: URLSessionDataTaskProtocol = URLSessionTasklMock()
@@ -82,7 +82,7 @@ class HTTPClientTestCase: XCTestCase {
         static let path = "/search"
         static let queryItems = [URLQueryItem(name: "jared", value: "kushner"), URLQueryItem(name: "donald", value: "trump")]
     }
-    
+
     func resolveRun(data: Data? = "".data(using: .utf8),
                     response: URLResponse? = HTTPURLResponse(url: URL(string: Constants.testHost)!, statusCode: 200, httpVersion: nil, headerFields: nil),
                     error: Error? = nil) {

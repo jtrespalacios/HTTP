@@ -8,10 +8,10 @@ let package = Package(
     products: [
         .library(
             name: "HTTP",
-            targets: ["HTTP"]),
+            targets: ["HTTP"])
     ],
     dependencies: [
-        .package(url: "https://github.com/mxcl/PromiseKit.git", from: "4.5.0")
+        .package(url: "https://github.com/mxcl/PromiseKit.git", from: "6.2.5")
     ],
     targets: [
         .target(
@@ -19,6 +19,6 @@ let package = Package(
             dependencies: ["PromiseKit"]),
         .testTarget(
             name: "HTTPTests",
-            dependencies: ["HTTP"]),
+            dependencies: ["HTTP"])
     ]
 )
