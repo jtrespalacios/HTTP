@@ -21,7 +21,7 @@ public protocol URLSessionProtocol {
 extension URLSessionDataTask: URLSessionDataTaskProtocol {}
 extension URLSessionDownloadTask: URLSessionDownloadTaskProtocol {}
 
-extension  URLSession: URLSessionProtocol {
+extension URLSession: URLSessionProtocol {
     public func downloadTask(with url: URL, completionHandler: @escaping (URL?, URLResponse?, Error?) -> Void) -> URLSessionDownloadTaskProtocol {
         let task: URLSessionDownloadTask = downloadTask(with: url, completionHandler: completionHandler)
         return task as URLSessionDownloadTaskProtocol

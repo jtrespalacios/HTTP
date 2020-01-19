@@ -6,8 +6,8 @@
 //  Copyright © 2017 CocoaPods. All rights reserved.
 //
 
-import XCTest
 import HTTP
+import XCTest
 
 class URLSessionTasklMock: URLSessionDownloadTaskProtocol, URLSessionDataTaskProtocol {
     var resumeCalled = false
@@ -18,6 +18,7 @@ class URLSessionTasklMock: URLSessionDownloadTaskProtocol, URLSessionDataTaskPro
 
 class URLSessionProtocolMock: URLSessionProtocol {
     // MARK: - downloadTask
+
     var downloadTaskCalled = false
     var downloadTaskReceivedArguments: (url: URL, completionHandler: (URL?, URLResponse?, Error?) -> Void)?
     var downloadTaskReturnValue: URLSessionDownloadTaskProtocol = URLSessionTasklMock()
@@ -29,6 +30,7 @@ class URLSessionProtocolMock: URLSessionProtocol {
     }
 
     // MARK: - dataTask
+
     var dataTaskCalled = false
     var dataTaskReceivedArguments: (request: URLRequest, completionHandler: (Data?, URLResponse?, Error?) -> Swift.Void)?
     var dataTaskReturnValue: URLSessionDataTaskProtocol = URLSessionTasklMock()
@@ -61,12 +63,12 @@ struct FailingEncoding: Codable {
         case knownError
     }
 
-    func encode(to: Encoder) throws {
+    func encode(to _: Encoder) throws {
         throw FailingEncodingError.knownError
     }
 }
 
-func ==(lhs: TestCodable, rhs: TestCodable) -> Bool {
+func == (lhs: TestCodable, rhs: TestCodable) -> Bool {
     return lhs.name == rhs.name && lhs.age == rhs.age
 }
 
@@ -74,12 +76,40 @@ class HTTPClientTestCase: XCTestCase {
     var sessionMock: URLSessionProtocolMock!
     var client: APIClient!
     var httpClient: HTTPClient! { return client.httpClient }
-    let testURL = URL(string: Constants.testHost)!
+    typealias Headers = [(key: String, value: String)]
+    struct TestAPIConfig: APIClientConfig, Equatable {
+        static func == (lhs: HTTPClientTestCase.TestAPIConfig, rhs: HTTPClientTestCase.TestAPIConfig) -> Bool {
+            func compareHeaders(_ lhs: Headers, _ rhs: Headers) -> Bool {
+                let sl = lhs.sorted(by: { $0.key < $1.key })
+                let rl = rhs.sorted(by: { $0.key < $1.key })
+                var result = true
+                for (index, value) in sl.enumerated() {
+                    let rv = rl[index]
+                    result = value.key == rv.key && value.value == rv.value
+                    if !result {
+                        break
+                    }
+                }
+                return result
+            }
+            return lhs.host == rhs.host &&
+                lhs.headers.count == rhs.headers.count &&
+                compareHeaders(lhs.headers, rhs.headers)
+        }
+
+        let host: String
+        let headers: [(key: String, value: String)] = []
+
+        init(host: String = Constants.testHost) {
+            self.host = host
+        }
+    }
 
     enum Constants {
         static let testHost = "http://example.com"
         static let badHost = "////!@#$^#@$"
         static let path = "/search"
+        static let testUrl = URL(string: testHost)!
         static let queryItems = [URLQueryItem(name: "jared", value: "kushner"), URLQueryItem(name: "donald", value: "trump")]
     }
 
@@ -111,7 +141,7 @@ class HTTPClientTestCase: XCTestCase {
     override func setUp() {
         super.setUp()
         sessionMock = URLSessionProtocolMock()
-        client = try! APIClient(host: Constants.testHost, session: sessionMock)
+        client = try! APIClient(config: TestAPIConfig(), session: sessionMock)
     }
 }
 
