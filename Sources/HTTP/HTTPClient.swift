@@ -170,10 +170,25 @@ public class HTTPClient: HTTPRequester {
                     return
                 }
                 do {
+                    let result: T = try JSONDecoder().decode(T.self, from: data)
+                    seal.fulfill(result)
+                } catch {
+                    seal.reject(HTTPClientError.decodingFailed(T.self, data))
+                }
+            }
+        }
+    }
+
+    public func sendDecodableRequest<T: ResponsePayload>(_ requestable: Requestable) -> Promise<T> {
+        return send(requestable).then { (response: HTTPURLResponse, data: Data?) in
+            Promise<T> { seal in
+                guard let data = data else {
+                    seal.reject(HTTPClientError.unexpectedResponse(nil, response))
+                    return
+                }
+                do {
                     let decoder = JSONDecoder()
-                    if T.self is ResponsePayload {
-                        decoder.keyDecodingStrategy = (T.self as! ResponsePayload.Type).keyDecodingStrategy
-                    }
+                    decoder.keyDecodingStrategy = T.self.keyDecodingStrategy
                     let result: T = try decoder.decode(T.self, from: data)
                     seal.fulfill(result)
                 } catch {
