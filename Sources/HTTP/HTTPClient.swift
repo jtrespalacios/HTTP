@@ -171,6 +171,9 @@ public class HTTPClient: HTTPRequester {
                 }
                 do {
                     let decoder = JSONDecoder()
+                    if T.self is ResponsePayload {
+                        decoder.keyDecodingStrategy = (T.self as! ResponsePayload.Type).keyDecodingStrategy
+                    }
                     let result: T = try decoder.decode(T.self, from: data)
                     seal.fulfill(result)
                 } catch {

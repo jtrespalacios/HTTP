@@ -8,11 +8,11 @@
 import Foundation
 
 public protocol RequestPayload: Codable {
-    var keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy { get }
+    static var keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy { get }
 }
 
 public extension RequestPayload {
-    var keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy {
+    static var keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy {
         return .useDefaultKeys
     }
 }

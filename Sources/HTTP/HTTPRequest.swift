@@ -70,7 +70,7 @@ public class HTTPRequest {
         request.httpMethod = method.rawValue
 
         do {
-            request.httpBody = try JSONEncoder().encode(payload)
+            request.httpBody = try encode(payload)
         } catch {
             throw HTTPRequestError.encodingFailed(payload)
         }
@@ -130,11 +130,19 @@ public class HTTPRequest {
         request.httpMethod = method.rawValue
 
         do {
-            request.httpBody = try JSONEncoder().encode(payload)
+            request.httpBody = try encode(payload)
         } catch {
             throw HTTPRequestError.encodingFailed(payload)
         }
         return resolveRequestable(request, identifier: identifier)
+    }
+
+    private static func encode<T: Encodable>(_ payload: T) throws -> Data {
+        let encoder = JSONEncoder()
+        if let reqPay = payload as? RequestPayload {
+            encoder.keyEncodingStrategy = type(of: reqPay).keyEncodingStrategy
+        }
+        return try encoder.encode(payload)
     }
 }
 
