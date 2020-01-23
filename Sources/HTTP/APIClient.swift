@@ -1,8 +1,3 @@
-//
-//  APIClient.swift
-//  HTTP
-//
-
 import Foundation
 import PromiseKit
 
@@ -55,71 +50,91 @@ open class APIClient: HTTPClientDelegate {
     open func willSend(request: inout Requestable) throws {
         var request = request
         for header in config.headers {
-            request.request.addValue(header.value,
-                                     forHTTPHeaderField: header.key)
+            request.request.addValue(
+                header.value,
+                forHTTPHeaderField: header.key
+            )
         }
     }
 
     public func send<T: Decodable>(_ requestableRoute: RequestableRoute) throws -> Promise<T> {
-        let requestable = try HTTPRequest.generateRequest(config.host,
-                                                          path: requestableRoute.path,
-                                                          queryItems: requestableRoute.queryItems,
-                                                          method: requestableRoute.method,
-                                                          identifier: requestableRoute.identifier)
+        let requestable = try HTTPRequest.generateRequest(
+            config.host,
+            path: requestableRoute.path,
+            queryItems: requestableRoute.queryItems,
+            method: requestableRoute.method,
+            identifier: requestableRoute.identifier
+        )
         return httpClient.sendDecodableRequest(requestable)
     }
 
     public func send<T: Decodable, U: RequestableUploadRoute>(_ requestableRoute: U) throws -> Promise<T> {
-        let requestable = try HTTPRequest.generateRequest(config.host,
-                                                          path: requestableRoute.path,
-                                                          queryItems: requestableRoute.queryItems,
-                                                          payload: requestableRoute.payload,
-                                                          method: requestableRoute.method,
-                                                          identifier: requestableRoute.identifier)
+        let requestable = try HTTPRequest.generateRequest(
+            config.host,
+            path: requestableRoute.path,
+            queryItems: requestableRoute.queryItems,
+            payload: requestableRoute.payload,
+            method: requestableRoute.method,
+            identifier: requestableRoute.identifier
+        )
         return httpClient.sendDecodableRequest(requestable)
     }
 
-    open func get<T: Decodable>(_ path: String,
-                                queryItems: [URLQueryItem]? = nil,
-                                identifier: String? = nil) throws -> Promise<T> {
+    open func get<T: Decodable>(
+        _ path: String,
+        queryItems: [URLQueryItem]? = nil,
+        identifier: String? = nil
+    ) throws -> Promise<T> {
         let request = try HTTPRequest.generateRequest(config.host, path: path, queryItems: queryItems, identifier: identifier)
         return httpClient.sendDecodableRequest(request)
     }
 
-    open func put<T: Encodable, U: Decodable>(_ path: String,
-                                              payload: T,
-                                              queryItems: [URLQueryItem]? = nil,
-                                              identifier: String? = nil) throws -> Promise<U> {
-        let request = try HTTPRequest.generateRequest(config.host,
-                                                      path: path,
-                                                      queryItems: queryItems,
-                                                      payload: payload,
-                                                      method: .put,
-                                                      identifier: identifier)
+    open func put<T: Encodable, U: Decodable>(
+        _ path: String,
+        payload: T,
+        queryItems: [URLQueryItem]? = nil,
+        identifier: String? = nil
+    ) throws -> Promise<U> {
+        let request = try HTTPRequest.generateRequest(
+            config.host,
+            path: path,
+            queryItems: queryItems,
+            payload: payload,
+            method: .put,
+            identifier: identifier
+        )
         return httpClient.sendDecodableRequest(request)
     }
 
-    open func post<T: Encodable, U: Decodable>(_ path: String,
-                                               payload: T,
-                                               queryItems: [URLQueryItem]? = nil,
-                                               identifier: String? = nil) throws -> Promise<U> {
-        let request = try HTTPRequest.generateRequest(config.host,
-                                                      path: path,
-                                                      queryItems: queryItems,
-                                                      payload: payload,
-                                                      method: .post,
-                                                      identifier: identifier)
+    open func post<T: Encodable, U: Decodable>(
+        _ path: String,
+        payload: T,
+        queryItems: [URLQueryItem]? = nil,
+        identifier: String? = nil
+    ) throws -> Promise<U> {
+        let request = try HTTPRequest.generateRequest(
+            config.host,
+            path: path,
+            queryItems: queryItems,
+            payload: payload,
+            method: .post,
+            identifier: identifier
+        )
         return httpClient.sendDecodableRequest(request)
     }
 
-    open func delete(_ path: String,
-                     queryItems: [URLQueryItem]? = nil,
-                     identifier: String? = nil) throws -> Promise<(HTTPURLResponse, Data?)> {
-        let request = try HTTPRequest.generateRequest(config.host,
-                                                      path: path,
-                                                      queryItems: queryItems,
-                                                      method: .delete,
-                                                      identifier: identifier)
+    open func delete(
+        _ path: String,
+        queryItems: [URLQueryItem]? = nil,
+        identifier: String? = nil
+    ) throws -> Promise<(HTTPURLResponse, Data?)> {
+        let request = try HTTPRequest.generateRequest(
+            config.host,
+            path: path,
+            queryItems: queryItems,
+            method: .delete,
+            identifier: identifier
+        )
         return httpClient.send(request)
     }
 

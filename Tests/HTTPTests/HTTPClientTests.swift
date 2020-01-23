@@ -1,11 +1,3 @@
-//
-//  HTTPClientTests.swift
-//  HTTP_Tests
-//
-//  Created by Jeff Trespalacios on 11/20/17.
-//  Copyright © 2017 CocoaPods. All rights reserved.
-//
-
 @testable import HTTP
 import PromiseKit
 import XCTest
@@ -21,10 +13,12 @@ class HTTPClientTests: HTTPClientTestCase {
     }
 
     func testBadAPIClientHost() {
-        XCTAssertThrowsError(try APIClient(
-            config: TestAPIConfig(host: Constants.badHost),
-            session: sessionMock
-        ))
+        XCTAssertThrowsError(
+            try APIClient(
+                config: TestAPIConfig(host: Constants.badHost),
+                session: sessionMock
+            )
+        )
     }
 
     func testRejectedAPIRequest() {
@@ -116,11 +110,13 @@ class HTTPClientTests: HTTPClientTestCase {
     }
 
     func testRequestWithSpecifiedIdentifier() {
-        let requestable = try! HTTPRequest.generateRequest(Constants.testHost,
-                                                           path: "/",
-                                                           queryItems: nil,
-                                                           method: .get,
-                                                           identifier: "Getting the test host")
+        let requestable = try! HTTPRequest.generateRequest(
+            Constants.testHost,
+            path: "/",
+            queryItems: nil,
+            method: .get,
+            identifier: "Getting the test host"
+        )
         XCTAssertEqual("Getting the test host", requestable.identifier)
     }
 

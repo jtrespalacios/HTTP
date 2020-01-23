@@ -1,11 +1,3 @@
-//
-//  NetworkTestHelpers.swift
-//  HTTP_Example
-//
-//  Created by Jeff Trespalacios on 11/21/17.
-//  Copyright © 2017 CocoaPods. All rights reserved.
-//
-
 import HTTP
 import XCTest
 
@@ -49,12 +41,14 @@ struct TestCodable: Codable, Equatable {
     static func testSubject() -> TestCodable {
         let birthDate = Calendar.autoupdatingCurrent.date(from: DateComponents(year: 1967, month: 2, day: 27))!
         let years = Calendar.autoupdatingCurrent.dateComponents([.year], from: birthDate, to: Date()).year!
-        return TestCodable(name: "King of Symmetry",
-                           age: years)
+        return TestCodable(
+            name: "King of Symmetry",
+            age: years
+        )
     }
 
     static func testData() -> Data {
-        return try! JSONEncoder().encode(testSubject())
+        try! JSONEncoder().encode(testSubject())
     }
 }
 
@@ -69,13 +63,13 @@ struct FailingEncoding: Codable {
 }
 
 func == (lhs: TestCodable, rhs: TestCodable) -> Bool {
-    return lhs.name == rhs.name && lhs.age == rhs.age
+    lhs.name == rhs.name && lhs.age == rhs.age
 }
 
 class HTTPClientTestCase: XCTestCase {
     var sessionMock: URLSessionProtocolMock!
     var client: APIClient!
-    var httpClient: HTTPClient! { return client.httpClient }
+    var httpClient: HTTPClient! { client.httpClient }
     typealias Headers = [(key: String, value: String)]
     struct TestAPIConfig: APIClientConfig, Equatable {
         static func == (lhs: HTTPClientTestCase.TestAPIConfig, rhs: HTTPClientTestCase.TestAPIConfig) -> Bool {
@@ -113,14 +107,16 @@ class HTTPClientTestCase: XCTestCase {
         static let queryItems = [URLQueryItem(name: "jared", value: "kushner"), URLQueryItem(name: "donald", value: "trump")]
     }
 
-    func resolveRun(data: Data? = "".data(using: .utf8),
-                    response: URLResponse? = HTTPURLResponse(url: URL(string: Constants.testHost)!, statusCode: 200, httpVersion: nil, headerFields: nil),
-                    error: Error? = nil) {
+    func resolveRun(
+        data: Data? = "".data(using: .utf8),
+        response: URLResponse? = HTTPURLResponse(url: URL(string: Constants.testHost)!, statusCode: 200, httpVersion: nil, headerFields: nil),
+        error: Error? = nil
+    ) {
         sessionMock.dataTaskReceivedArguments!.completionHandler(data, response, error)
     }
 
     func response(statusCode: Int = 200) -> HTTPURLResponse {
-        return HTTPURLResponse(url: URL(string: Constants.testHost)!, statusCode: statusCode, httpVersion: nil, headerFields: nil)!
+        HTTPURLResponse(url: URL(string: Constants.testHost)!, statusCode: statusCode, httpVersion: nil, headerFields: nil)!
     }
 
     func validateResult(_ result: TestCodable, e: XCTestExpectation) {

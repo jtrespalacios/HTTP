@@ -1,12 +1,7 @@
-//
-//  HTTPClient.swift
-//  HTTP
-//
-
 import Foundation
 import PromiseKit
 
-public protocol HTTPClientDelegate: class {
+public protocol HTTPClientDelegate: AnyObject {
     func willSend(request: inout Requestable) throws
 }
 
@@ -31,15 +26,21 @@ public class HTTPClient: HTTPRequester {
         self.session = session
     }
 
-    public init(sessionConfig: URLSessionConfiguration = .default,
-                queue: OperationQueue = OperationQueue()) {
-        session = URLSession(configuration: sessionConfig,
-                             delegate: nil,
-                             delegateQueue: queue)
+    public init(
+        sessionConfig: URLSessionConfiguration = .default,
+        queue: OperationQueue = OperationQueue()
+    ) {
+        session = URLSession(
+            configuration: sessionConfig,
+            delegate: nil,
+            delegateQueue: queue
+        )
     }
 
-    public func send(_ requestable: Requestable) -> Promise<(HTTPURLResponse, Data?)> {
-        return Promise<(HTTPURLResponse, Data?)> { seal in
+    public func send(
+        _ requestable: Requestable
+    ) -> Promise<(HTTPURLResponse, Data?)> {
+        Promise<(HTTPURLResponse, Data?)> { seal in
             var requestable = requestable
             do {
                 try delegate?.willSend(request: &requestable)
@@ -63,7 +64,10 @@ public class HTTPClient: HTTPRequester {
         }
     }
 
-    public func get(url: String, queryItems: [URLQueryItem]?) -> Promise<(HTTPURLResponse, Data?)> {
+    public func get(
+        url: String,
+        queryItems: [URLQueryItem]?
+    ) -> Promise<(HTTPURLResponse, Data?)> {
         do {
             return try send(HTTPRequest.generateRequest(url, queryItems: queryItems, method: .get))
         } catch {
@@ -71,23 +75,35 @@ public class HTTPClient: HTTPRequester {
         }
     }
 
-    public func post<T: Encodable>(_ url: String, queryItems: [URLQueryItem]?, payload: T) -> Promise<(HTTPURLResponse, Data?)> {
+    public func post<T: Encodable>(
+        _ url: String,
+        queryItems: [URLQueryItem]?,
+        payload: T
+    ) -> Promise<(HTTPURLResponse, Data?)> {
         do {
-            let request = try HTTPRequest.generateRequest(url,
-                                                          queryItems: queryItems,
-                                                          payload: payload)
+            let request = try HTTPRequest.generateRequest(
+                url,
+                queryItems: queryItems,
+                payload: payload
+            )
             return send(request)
         } catch {
             return Promise(error: error)
         }
     }
 
-    public func put<T: Encodable>(_ url: String, queryItems: [URLQueryItem]?, payload: T) -> Promise<(HTTPURLResponse, Data?)> {
+    public func put<T: Encodable>(
+        _ url: String,
+        queryItems: [URLQueryItem]?,
+        payload: T
+    ) -> Promise<(HTTPURLResponse, Data?)> {
         do {
-            let request = try HTTPRequest.generateRequest(url,
-                                                          queryItems: queryItems,
-                                                          method: .put,
-                                                          payload: payload)
+            let request = try HTTPRequest.generateRequest(
+                url,
+                queryItems: queryItems,
+                method: .put,
+                payload: payload
+            )
             return send(request)
         } catch {
             return Promise(error: error)
@@ -99,11 +115,13 @@ public class HTTPClient: HTTPRequester {
         queryItems: [URLQueryItem]? = nil
     ) -> Promise<(HTTPURLResponse, Data?)> {
         do {
-            return try send(HTTPRequest.generateRequest(
-                url,
-                queryItems: queryItems,
-                method: .delete
-            ))
+            return try send(
+                HTTPRequest.generateRequest(
+                    url,
+                    queryItems: queryItems,
+                    method: .delete
+                )
+            )
         } catch {
             return Promise(error: error)
         }
@@ -142,10 +160,12 @@ public class HTTPClient: HTTPRequester {
         queryItems: [URLQueryItem]? = nil,
         payload: T
     ) throws -> Promise<U> {
-        let request = try HTTPRequest.generateRequest(url,
-                                                      queryItems: queryItems,
-                                                      method: .post,
-                                                      payload: payload)
+        let request = try HTTPRequest.generateRequest(
+            url,
+            queryItems: queryItems,
+            method: .post,
+            payload: payload
+        )
         return sendDecodableRequest(request)
     }
 
@@ -162,15 +182,18 @@ public class HTTPClient: HTTPRequester {
         }
     }
 
-    public func sendDecodableRequest<T: Decodable>(_ requestable: Requestable) -> Promise<T> {
-        return send(requestable).then { (response: HTTPURLResponse, data: Data?) in
+    public func sendDecodableRequest<T: Decodable>(
+        _ requestable: Requestable
+    ) -> Promise<T> {
+        send(requestable).then { (response: HTTPURLResponse, data: Data?) in
             Promise<T> { seal in
                 guard let data = data else {
                     seal.reject(HTTPClientError.unexpectedResponse(nil, response))
                     return
                 }
                 do {
-                    let result: T = try JSONDecoder().decode(T.self, from: data)
+                    let decoder = JSONDecoder()
+                    let result: T = try decoder.decode(T.self, from: data)
                     seal.fulfill(result)
                 } catch {
                     seal.reject(HTTPClientError.decodingFailed(T.self, data))
@@ -179,8 +202,10 @@ public class HTTPClient: HTTPRequester {
         }
     }
 
-    public func sendDecodableRequest<T: ResponsePayload>(_ requestable: Requestable) -> Promise<T> {
-        return send(requestable).then { (response: HTTPURLResponse, data: Data?) in
+    public func sendDecodableRequest<T: ResponsePayload>(
+        _ requestable: Requestable
+    ) -> Promise<T> {
+        send(requestable).then { (response: HTTPURLResponse, data: Data?) in
             Promise<T> { seal in
                 guard let data = data else {
                     seal.reject(HTTPClientError.unexpectedResponse(nil, response))
@@ -198,7 +223,10 @@ public class HTTPClient: HTTPRequester {
         }
     }
 
-    open func responseHasError(_ response: HTTPURLResponse, data _: Data?) throws {
+    open func responseHasError(
+        _ response: HTTPURLResponse,
+        data _: Data?
+    ) throws {
         switch response.statusCode {
         case 400 ..< 500:
             throw HTTPClientError.badRequest(response.statusCode)

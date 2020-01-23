@@ -1,8 +1,3 @@
-//
-//  HTTPRequest.swift
-//  HTTP
-//
-
 import Foundation
 import PromiseKit
 
@@ -18,14 +13,14 @@ public protocol Requestable {
 extension URLRequest: Requestable {
     public var request: URLRequest {
         get {
-            return self
+            self
         }
         set {
             self = newValue
         }
     }
 
-    public var identifier: String { return request.url!.absoluteString }
+    public var identifier: String { request.url!.absoluteString }
 }
 
 public class IdentifiedURLRequest: Requestable {
@@ -147,10 +142,7 @@ public class HTTPRequest {
 }
 
 private extension HTTPRequest {
-    static func resolveRequestable(
-        _ request: URLRequest,
-        identifier: String?
-    ) -> Requestable {
+    static func resolveRequestable(_ request: URLRequest, identifier: String?) -> Requestable {
         if let identifier = identifier {
             return IdentifiedURLRequest(request: request, identifier: identifier)
         }

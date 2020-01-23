@@ -1,11 +1,3 @@
-//
-//  APIClientTests.swift
-//  _Tests
-//
-//  Created by Jeff Trespalacios on 11/21/17.
-//  Copyright © 2017 CocoaPods. All rights reserved.
-//
-
 @testable import HTTP
 import XCTest
 
@@ -78,17 +70,17 @@ class APIClientTests: HTTPClientTestCase {
 }
 
 struct TestSimpleRoute: RequestableRoute {
-    var path: String { return "/search" }
-    var method: HTTPRequest.Method { return .get }
-    var queryItems: [URLQueryItem]? { return nil }
-    var identifier: String? { return nil }
+    var path: String { "/search" }
+    var method: HTTPRequest.Method { .get }
+    var queryItems: [URLQueryItem]? { nil }
+    var identifier: String? { nil }
 }
 
 struct TestUploadRoute: RequestableUploadRoute {
     typealias Payload = TestCodable
-    var path: String { return "/search" }
-    var method: HTTPRequest.Method { return .post }
-    var queryItems: [URLQueryItem]? { return nil }
-    var identifier: String? { return nil }
-    var payload: Payload { return TestCodable.testSubject() }
+    var path: String { "/search" }
+    var method: HTTPRequest.Method { .post }
+    var queryItems: [URLQueryItem]? { nil }
+    var identifier: String? { nil }
+    var payload: Payload { TestCodable.testSubject() }
 }

@@ -1,10 +1,3 @@
-//
-//  HTTPRequester.swift
-//  HTTP
-//
-//  Created by Jeffery Trespalacios on 4/21/18.
-//
-
 import Foundation
 import PromiseKit
 
@@ -13,8 +6,10 @@ public protocol HTTPRequester {
 
     func send(_ request: Requestable) -> Promise<(HTTPURLResponse, Data?)>
 
-    func get(url: String,
-             queryItems: [URLQueryItem]?) -> Promise<(HTTPURLResponse, Data?)>
+    func get(
+        url: String,
+        queryItems: [URLQueryItem]?
+    ) -> Promise<(HTTPURLResponse, Data?)>
 
     func get<T: Decodable>(
         _ url: String,

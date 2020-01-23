@@ -1,8 +1,3 @@
-//
-//  HTTPClient+Protocols.swift
-//  HTTP
-//
-
 import Foundation
 
 public protocol URLSessionDownloadTaskProtocol {

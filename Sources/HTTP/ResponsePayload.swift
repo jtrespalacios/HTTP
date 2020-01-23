@@ -1,10 +1,3 @@
-//
-//  File.swift
-//
-//
-//  Created by Jeffery Trespalacios on 1/21/20.
-//
-
 import Foundation
 
 public protocol ResponsePayload: Codable {
@@ -13,6 +6,6 @@ public protocol ResponsePayload: Codable {
 
 public extension ResponsePayload {
     static var keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy {
-        return .useDefaultKeys
+        .useDefaultKeys
     }
 }
